@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "689883463173",
+    "project_id": "smartcolab-8aaff",
+    "storage_bucket": "smartcolab-8aaff.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:689883463173:android:e5ac6628911d6977e1266c",
+        "android_client_info": {
+          "package_name": "eu.lukatjee.smartcolab"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "689883463173-lau137jgh4tmud9hdb7bk5qrnhesb72u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlcHj81QpPaRyit5dcbWTzAy9a5wT9iL0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "689883463173-lau137jgh4tmud9hdb7bk5qrnhesb72u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
