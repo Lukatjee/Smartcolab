@@ -1,6 +1,5 @@
 package eu.lukatjee.smartcolab
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
 import android.view.KeyEvent
@@ -8,11 +7,16 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.firestore.FirebaseFirestore
+
 
 class Profile : AppCompatActivity(), View.OnClickListener {
+
+    var db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -63,9 +67,14 @@ class Profile : AppCompatActivity(), View.OnClickListener {
                                 editDpFld.visibility = EditText.GONE
                                 editDpFld.text.clear()
 
-                                FirebaseAuth.getInstance().signOut()
-                                intent = Intent(this, Main::class.java)
-                                startActivity(intent)
+                                val changedData = hashMapOf(
+
+                                    "timestamp" to Timestamp.now()
+
+                                )
+
+                                getData()
+                                db.collection("usernameChanges").document(user.uid).set(changedData)
 
                             }
 
@@ -111,10 +120,14 @@ class Profile : AppCompatActivity(), View.OnClickListener {
                                 editEmFld.visibility = EditText.GONE
                                 editEmFld.text.clear()
 
-                                FirebaseAuth.getInstance().signOut()
-                                intent = Intent(this, Main::class.java)
-                                startActivity(intent)
+                                val changedData = hashMapOf(
 
+                                    "timestamp" to Timestamp.now()
+
+                                )
+
+                                getData()
+                                db.collection("emailChanges").document(user.uid).set(changedData)
 
                             }
 
