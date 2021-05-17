@@ -16,7 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class Profile : AppCompatActivity(), View.OnClickListener {
 
-    var db = FirebaseFirestore.getInstance()
+    private var db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 

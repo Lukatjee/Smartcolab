@@ -4,13 +4,23 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.installations.FirebaseInstallations
+import java.util.*
 
 
 class Main : AppCompatActivity(), View.OnClickListener {
+
+    private val mAuth = FirebaseAuth.getInstance();
+    private var db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?){
 
@@ -19,6 +29,34 @@ class Main : AppCompatActivity(), View.OnClickListener {
 
         val forgotPin = findViewById<TextView>(R.id.forgotPin); forgotPin.setOnClickListener(this)
         val loginButton = findViewById<Button>(R.id.loginButton); loginButton.setOnClickListener(this)
+
+    }
+
+    public override fun onStart() {
+
+        super.onStart()
+
+        val currentUser = mAuth.currentUser
+
+        if (currentUser != null) {
+
+            val uid = FirebaseAuth.getInstance().currentUser!!.uid
+            val emailChanges = db.collection("emailChanges")
+
+            emailChanges.document(uid).get()
+
+                .addOnCompleteListener { task ->
+
+                    val document: DocumentSnapshot? = task.result
+                    if (document!!.exists()) {
+
+                        val lastChangeEmailTime = document.getDate("timestamp")
+
+                    }
+
+                }
+
+        }
 
     }
 
@@ -89,6 +127,14 @@ class Main : AppCompatActivity(), View.OnClickListener {
 
                 intent = Intent(this, Profile::class.java)
                 startActivity(intent)
+
+                val lastLogin = hashMapOf(
+
+                    "timestamp" to Timestamp.now()
+
+                )
+
+                db.collection("lastLogin").document(FirebaseInstallations.getInstance().id.toString()).set(lastLogin)
 
                 val user = FirebaseAuth.getInstance().currentUser
 
