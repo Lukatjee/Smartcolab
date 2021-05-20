@@ -19,7 +19,6 @@ import java.util.*
 
 class Main : AppCompatActivity(), View.OnClickListener {
 
-    private val mAuth = FirebaseAuth.getInstance();
     private var db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?){
@@ -32,41 +31,11 @@ class Main : AppCompatActivity(), View.OnClickListener {
 
     }
 
-    public override fun onStart() {
-
-        super.onStart()
-
-        val currentUser = mAuth.currentUser
-
-        if (currentUser != null) {
-
-            val uid = FirebaseAuth.getInstance().currentUser!!.uid
-            val emailChanges = db.collection("emailChanges")
-
-            emailChanges.document(uid).get()
-
-                .addOnCompleteListener { task ->
-
-                    val document: DocumentSnapshot? = task.result
-                    if (document!!.exists()) {
-
-                        val lastChangeEmailTime = document.getDate("timestamp")
-
-                    }
-
-                }
-
-        }
-
-    }
-
     override fun onClick(v: View?) {
 
-        when (v?.id) {
+        when (v?.id) { R.id.loginButton -> userLogin(); R.id.forgotPin -> {
 
-            R.id.loginButton -> userLogin()
-            R.id.forgotPin -> {
-
+                // Handle event where user clicks the "Forgot PIN" button
                 val usernameInput = findViewById<EditText>(R.id.fieldUsername); val usernameData = usernameInput.text.toString().trim()
 
                 if (!Patterns.EMAIL_ADDRESS.matcher(usernameData).matches()) {
@@ -80,15 +49,11 @@ class Main : AppCompatActivity(), View.OnClickListener {
 
                 FirebaseAuth.getInstance().sendPasswordResetEmail(usernameData).addOnCompleteListener { task ->
 
-                    if (task.isSuccessful) {
-
-                        Toast.makeText(this, "Email has been sent!", Toast.LENGTH_LONG).show()
-
-                    } else {
+                    if (!task.isSuccessful) {
 
                         Toast.makeText(this, "This email address is not in our database!", Toast.LENGTH_LONG).show()
 
-                    }
+                    } else { Toast.makeText(this, "Email has been sent!", Toast.LENGTH_LONG).show() }
 
                 }
 
@@ -98,6 +63,7 @@ class Main : AppCompatActivity(), View.OnClickListener {
 
     }
 
+    // Function to log the user in to their account
     private fun userLogin() {
 
         val usernameInput = findViewById<EditText>(R.id.fieldUsername); val usernameData = usernameInput.text.toString().trim()
@@ -128,25 +94,12 @@ class Main : AppCompatActivity(), View.OnClickListener {
                 intent = Intent(this, Profile::class.java)
                 startActivity(intent)
 
-                val lastLogin = hashMapOf(
-
-                    "timestamp" to Timestamp.now()
-
-                )
-
+                val lastLogin = hashMapOf("timestamp" to Timestamp.now())
                 db.collection("lastLogin").document(FirebaseInstallations.getInstance().id.toString()).set(lastLogin)
-
-                val user = FirebaseAuth.getInstance().currentUser
 
             } else {
 
-                Toast.makeText(
-
-                    this,
-                    "Failed to log in, please check your credentials!",
-                    Toast.LENGTH_LONG
-
-                ).show()
+                Toast.makeText(this, "Failed to log in, please check your credentials!", Toast.LENGTH_LONG).show()
 
             }
 

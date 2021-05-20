@@ -53,7 +53,7 @@
             app:layout_constraintTop_toBottomOf="@+id/displayNameTtl" />
 
         <TextView
-            android:id="@+id/changeDpBtn"
+            android:id="@+id/changeDisplaynameButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
@@ -104,7 +104,7 @@
             app:layout_constraintTop_toBottomOf="@+id/emailTtl" />
 
         <TextView
-            android:id="@+id/changeEmailBtn"
+            android:id="@+id/changeEmailButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
@@ -129,7 +129,7 @@
             android:paddingHorizontal="5dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/imageView"
-            app:layout_constraintEnd_toEndOf="@+id/changeEmailBtn"
+            app:layout_constraintEnd_toEndOf="@+id/changeEmailButton"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/emailVw"
             app:layout_constraintTop_toBottomOf="@+id/emailTtl"
@@ -149,7 +149,7 @@
             android:paddingHorizontal="5dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/imageView"
-            app:layout_constraintEnd_toEndOf="@+id/changeEmailBtn"
+            app:layout_constraintEnd_toEndOf="@+id/changeEmailButton"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/emailVw"
             app:layout_constraintTop_toBottomOf="@+id/emailTtl"

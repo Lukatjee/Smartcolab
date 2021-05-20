@@ -24,12 +24,14 @@ class Profile : AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_profile)
 
         // Initialize the button to change the user's displayname
-        val changeDisplaynameButton = findViewById<TextView>(R.id.changeDpBtn)
+        val changeDisplaynameButton = findViewById<TextView>(R.id.changeDisplaynameButton)
         changeDisplaynameButton.setOnClickListener(this)
 
         // Initialize the button to change the user's email address
-        val changeEmailButton = findViewById<TextView>(R.id.changeEmailBtn)
+        val changeEmailButton = findViewById<TextView>(R.id.changeEmailButton)
         changeEmailButton.setOnClickListener(this)
+
+        getData()
 
     }
 
@@ -49,7 +51,8 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
         when (v?.id) {
 
-            R.id.changeDpBtn -> {
+            // Handles changing the users displayname
+            R.id.changeDisplaynameButton -> {
 
                 if (changeDisplaynameEditText.visibility == EditText.GONE) {
 
@@ -63,128 +66,131 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
                 if (changeEmailEditText.visibility == EditText.VISIBLE) {
 
-                    changeEmailEditText.visibility = EditText.GONE; changeEmailEditText.text.clear()
+                    changeEmailEditText.visibility = EditText.GONE
+                    changeEmailEditText.text.clear()
 
                 }
 
                 changeDisplaynameEditText.setOnKeyListener { _, keyCode, event ->
 
-                    if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                    val checkOne = keyCode == KeyEvent.KEYCODE_ENTER
+                    val checkTwo = event.action == KeyEvent.ACTION_UP
 
-                        val user: FirebaseUser? = FirebaseAuth.getInstance().currentUser;
-                        val userIpt = changeDisplaynameEditText.text.toString().trim()
+                    val currentlyLoggedInUser : FirebaseUser? = FirebaseAuth.getInstance().currentUser;
+                    val currentUserInput = changeDisplaynameEditText.text.toString().trim()
 
-                        if (userIpt.isEmpty()) {
+                    val profileUpdate = UserProfileChangeRequest.Builder().setDisplayName(currentUserInput).build()
 
-                            changeDisplaynameEditText.error = "Invalid username"; changeDisplaynameEditText.requestFocus()
+                    if (!checkOne && !checkTwo) { return@setOnKeyListener false }
 
-                        }
+                    if (currentUserInput.isEmpty()) {
 
-                        val profileUpdate = UserProfileChangeRequest.Builder().setDisplayName(userIpt).build()
-                        user!!.updateProfile(profileUpdate).addOnCompleteListener {
-
-                            changeDisplaynameEditText.visibility = EditText.GONE
-                            changeDisplaynameEditText.text.clear()
-
-                            val changedData = hashMapOf(
-
-                                "timestamp" to Timestamp.now()
-
-                            )
-
-                            db.collection("usernameChanges").document(user.uid).set(changedData)
-
-                        }
+                        changeDisplaynameEditText.error = "Invalid username"; changeDisplaynameEditText.requestFocus()
+                        return@setOnKeyListener false
 
                     }
+
+                    currentlyLoggedInUser!!.updateProfile(profileUpdate).addOnCompleteListener {
+
+                        changeDisplaynameEditText.visibility = EditText.GONE
+                        changeDisplaynameEditText.text.clear(); getData()
+
+                    }
+
+                    return@setOnKeyListener true
 
                 }
 
             }
-        }
 
-                    R.id.changeEmailBtn -> {
+            // Handles changing the users email address
+            R.id.changeEmailButton -> {
 
-                        if (changeDisplaynameEditText.visibility == EditText.GONE) {
+                if (changeEmailEditText.visibility == EditText.GONE) {
 
-                            changeDisplaynameEditText.visibility = EditText.VISIBLE
+                    changeEmailEditText.visibility = EditText.VISIBLE
 
-                        } else {
+                } else {
 
-                            changeDisplaynameEditText.visibility = EditText.GONE
-
-                        }
-
-                        if (changeEmailEditText.visibility == EditText.VISIBLE) {
-
-                            changeEmailEditText.visibility = EditText.GONE; changeEmailEditText.text.clear()
-
-                        }
-
-                        changeEmailEditText.setOnKeyListener { _, keyCode, event ->
-
-                            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
-
-                                val user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
-                                val userIpt = changeEmailEditText.text.toString().trim()
-
-                                if (Patterns.EMAIL_ADDRESS.matcher(userIpt).matches()) {
-
-                                    user!!.updateEmail(userIpt).addOnCompleteListener {
-
-                                        changeEmailEditText.visibility = EditText.GONE
-                                        changeEmailEditText.text.clear()
-
-                                        val changedData = hashMapOf(
-
-                                            "timestamp" to Timestamp.now()
-
-                                        )
-
-                                        getData()
-                                        db.collection("emailChanges").document(user.uid)
-                                            .set(changedData)
-
-                                    }
-
-                                    return@setOnKeyListener true
-
-                                } else {
-
-                                    changeEmailEditText.error = "Invalid e-mail address"
-                                    changeEmailEditText.requestFocus()
-
-                                    return@setOnKeyListener false
-
-                                }
-
-                            }
-
-                            false
-
-                        }
+                    changeEmailEditText.visibility = EditText.GONE
 
                 }
 
-    private fun getData() {
+                if (changeDisplaynameEditText.visibility == EditText.VISIBLE) {
 
-        val user = FirebaseAuth.getInstance().currentUser
+                    changeDisplaynameEditText.visibility = EditText.GONE
+                    changeDisplaynameEditText.text.clear()
 
-        var name : String? = "N/A"
-        var email : String?
+                }
 
-        user.let {
+                changeEmailEditText.setOnKeyListener { _, keyCode, event ->
 
-            if (user!!.displayName!!.isNotEmpty()) { name = user.displayName }
-            email = user.email
+                    val checkOne = keyCode == KeyEvent.KEYCODE_ENTER
+                    val checkTwo = event.action == KeyEvent.ACTION_UP
+
+                    val currentlyLoggedInUser : FirebaseUser? = FirebaseAuth.getInstance().currentUser
+                    val currentUserInput = changeEmailEditText.text.toString().trim()
+
+                    if (!checkOne && !checkTwo) { return@setOnKeyListener false }
+
+                    if (!Patterns.EMAIL_ADDRESS.matcher(currentUserInput).matches()) {
+
+                        changeEmailEditText.error = "Invalid e-mail address"
+                        changeEmailEditText.requestFocus()
+
+                        return@setOnKeyListener false
+
+                    }
+
+                    currentlyLoggedInUser!!.updateEmail(currentUserInput).addOnCompleteListener {
+
+                        changeEmailEditText.visibility = EditText.GONE
+                        changeEmailEditText.text.clear()
+
+                        val changedData = hashMapOf(
+
+                            "timestamp" to Timestamp.now()
+
+                        )
+
+                        getData()
+                        db.collection("emailChanges").document(currentlyLoggedInUser.uid).set(changedData)
+
+                    }
+
+                    return@setOnKeyListener true
+
+                }
+
+            }
 
         }
 
-        val displayNameVw = findViewById<TextView>(R.id.displayNameVw)
-        displayNameVw.text = name; displayNameVw.invalidate()
+    }
 
+    // Gather all the user data and display it on the screen
+    private fun getData() {
+
+        val currentUser = FirebaseAuth.getInstance().currentUser
+
+        var currentUserDisplayname : String? = "N/A"
+        var currentUserEmail : String?
+
+        val displayNameVw = findViewById<TextView>(R.id.displayNameVw)
         val emailAddressVw = findViewById<TextView>(R.id.emailVw)
-        emailAddressVw.text = email; emailAddressVw.invalidate()
+
+        currentUser.let {
+
+            if (currentUser!!.displayName!!.isNotEmpty()) { currentUserDisplayname = currentUser.displayName }
+            currentUserEmail = currentUser.email
+
+        }
+
+        displayNameVw.text = currentUserDisplayname
+        displayNameVw.invalidate()
+
+        emailAddressVw.text = currentUserEmail
+        emailAddressVw.invalidate()
 
     }
 
