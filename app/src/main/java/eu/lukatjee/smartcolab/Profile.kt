@@ -23,136 +23,148 @@ class Profile : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
-        getData()
+        // Initialize the button to change the user's displayname
+        val changeDisplaynameButton = findViewById<TextView>(R.id.changeDpBtn)
+        changeDisplaynameButton.setOnClickListener(this)
 
-        val editUsernameBtn = findViewById<TextView>(R.id.changeDpBtn); editUsernameBtn.setOnClickListener(this)
-        val editEmailBtn = findViewById<TextView>(R.id.changeEmailBtn); editEmailBtn.setOnClickListener(this)
+        // Initialize the button to change the user's email address
+        val changeEmailButton = findViewById<TextView>(R.id.changeEmailBtn)
+        changeEmailButton.setOnClickListener(this)
 
     }
 
     override fun onBackPressed() {
 
         super.onBackPressed()
+
+        // Temporary functionality, log out on pressing the back button
         FirebaseAuth.getInstance().signOut()
 
     }
 
     override fun onClick(v: View?) {
 
-        val editDpFld = findViewById<EditText>(R.id.editUsernameField)
-        val editEmFld = findViewById<EditText>(R.id.editEmailField)
+        val changeDisplaynameEditText = findViewById<EditText>(R.id.editUsernameField)
+        val changeEmailEditText = findViewById<EditText>(R.id.editEmailField)
 
         when (v?.id) {
 
             R.id.changeDpBtn -> {
 
-                when (editDpFld.visibility) {
+                if (changeDisplaynameEditText.visibility == EditText.GONE) {
 
-                    EditText.GONE -> { editDpFld.visibility = EditText.VISIBLE; when (editEmFld.visibility) { EditText.VISIBLE -> { editEmFld.visibility = EditText.GONE; editEmFld.text.clear() }}}
-                    else -> editDpFld.visibility = EditText.GONE
+                    changeDisplaynameEditText.visibility = EditText.VISIBLE
+
+                } else {
+
+                    changeDisplaynameEditText.visibility = EditText.GONE
 
                 }
 
-                editDpFld.setOnKeyListener { _, keyCode, event ->
+                if (changeEmailEditText.visibility == EditText.VISIBLE) {
+
+                    changeEmailEditText.visibility = EditText.GONE; changeEmailEditText.text.clear()
+
+                }
+
+                changeDisplaynameEditText.setOnKeyListener { _, keyCode, event ->
 
                     if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
 
-                        val user: FirebaseUser? = FirebaseAuth.getInstance().currentUser; val userIpt = editDpFld.text.toString().trim()
+                        val user: FirebaseUser? = FirebaseAuth.getInstance().currentUser;
+                        val userIpt = changeDisplaynameEditText.text.toString().trim()
 
-                        if (userIpt.isNotEmpty()) {
+                        if (userIpt.isEmpty()) {
 
-                            val profileUpdate = UserProfileChangeRequest.Builder().setDisplayName(userIpt).build()
-                            user!!.updateProfile(profileUpdate).addOnCompleteListener {
+                            changeDisplaynameEditText.error = "Invalid username"; changeDisplaynameEditText.requestFocus()
 
-                                editDpFld.visibility = EditText.GONE
-                                editDpFld.text.clear()
+                        }
 
-                                val changedData = hashMapOf(
+                        val profileUpdate = UserProfileChangeRequest.Builder().setDisplayName(userIpt).build()
+                        user!!.updateProfile(profileUpdate).addOnCompleteListener {
 
-                                    "timestamp" to Timestamp.now()
+                            changeDisplaynameEditText.visibility = EditText.GONE
+                            changeDisplaynameEditText.text.clear()
 
-                                )
+                            val changedData = hashMapOf(
 
-                                getData()
-                                db.collection("usernameChanges").document(user.uid).set(changedData)
+                                "timestamp" to Timestamp.now()
 
-                            }
+                            )
 
-                            return@setOnKeyListener true
-
-                        } else {
-
-                            editDpFld.error = "Invalid username"
-                            editDpFld.requestFocus()
-
-                            return@setOnKeyListener false
+                            db.collection("usernameChanges").document(user.uid).set(changedData)
 
                         }
 
                     }
 
-                    false
-
                 }
 
             }
-
-            R.id.changeEmailBtn -> {
-
-                when (editEmFld.visibility) {
-
-                    EditText.GONE -> { editEmFld.visibility = EditText.VISIBLE; when (editDpFld.visibility) { EditText.VISIBLE -> { editDpFld.visibility = EditText.GONE; editDpFld.text.clear() }}}
-                    else -> editEmFld.visibility = EditText.GONE
-
-                }
-
-                editEmFld.setOnKeyListener { _, keyCode, event ->
-
-                    if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
-
-                        val user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
-                        val userIpt = editEmFld.text.toString().trim()
-
-                        if (Patterns.EMAIL_ADDRESS.matcher(userIpt).matches()) {
-
-                            user!!.updateEmail(userIpt).addOnCompleteListener {
-
-                                editEmFld.visibility = EditText.GONE
-                                editEmFld.text.clear()
-
-                                val changedData = hashMapOf(
-
-                                    "timestamp" to Timestamp.now()
-
-                                )
-
-                                getData()
-                                db.collection("emailChanges").document(user.uid).set(changedData)
-
-                            }
-
-                            return@setOnKeyListener true
-
-                        } else {
-
-                            editEmFld.error = "Invalid e-mail address"
-                            editEmFld.requestFocus()
-
-                            return@setOnKeyListener false
-
-                        }
-
-                    }
-
-                    false
-
-                }
-
-            }
-
         }
 
-    }
+                    R.id.changeEmailBtn -> {
+
+                        if (changeDisplaynameEditText.visibility == EditText.GONE) {
+
+                            changeDisplaynameEditText.visibility = EditText.VISIBLE
+
+                        } else {
+
+                            changeDisplaynameEditText.visibility = EditText.GONE
+
+                        }
+
+                        if (changeEmailEditText.visibility == EditText.VISIBLE) {
+
+                            changeEmailEditText.visibility = EditText.GONE; changeEmailEditText.text.clear()
+
+                        }
+
+                        changeEmailEditText.setOnKeyListener { _, keyCode, event ->
+
+                            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+
+                                val user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
+                                val userIpt = changeEmailEditText.text.toString().trim()
+
+                                if (Patterns.EMAIL_ADDRESS.matcher(userIpt).matches()) {
+
+                                    user!!.updateEmail(userIpt).addOnCompleteListener {
+
+                                        changeEmailEditText.visibility = EditText.GONE
+                                        changeEmailEditText.text.clear()
+
+                                        val changedData = hashMapOf(
+
+                                            "timestamp" to Timestamp.now()
+
+                                        )
+
+                                        getData()
+                                        db.collection("emailChanges").document(user.uid)
+                                            .set(changedData)
+
+                                    }
+
+                                    return@setOnKeyListener true
+
+                                } else {
+
+                                    changeEmailEditText.error = "Invalid e-mail address"
+                                    changeEmailEditText.requestFocus()
+
+                                    return@setOnKeyListener false
+
+                                }
+
+                            }
+
+                            false
+
+                        }
+
+                }
 
     private fun getData() {
 
