@@ -14,4 +14,8 @@
     <string name="emailAddressProfile">E-mail:</string>
     <string name="new_e_mail"><font size="12">New e-mail</font></string>
     <string name="new_username"><font size="12">New username</font></string>
+    <string name="refresh">Refresh</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="made_by_lukatjee">Made by Lukatjee</string>
 </resources>

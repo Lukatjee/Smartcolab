@@ -1,11 +1,14 @@
 package eu.lukatjee.smartcolab
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
 import android.view.KeyEvent
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -23,24 +26,44 @@ class Profile : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
-        // Initialize the button to change the user's displayname
         val changeDisplaynameButton = findViewById<TextView>(R.id.changeDisplaynameButton)
         changeDisplaynameButton.setOnClickListener(this)
 
-        // Initialize the button to change the user's email address
         val changeEmailButton = findViewById<TextView>(R.id.changeEmailButton)
         changeEmailButton.setOnClickListener(this)
+
+        val logoutButton = findViewById<ImageButton>(R.id.logoutButton)
+        logoutButton.setOnClickListener(this)
 
         getData()
 
     }
 
+    private var isPressed = false
+
+    private fun doubleTapBack() {
+
+        if (isPressed) {
+
+            this.finishAffinity()
+
+        } else {
+
+            Toast.makeText(this, "Press return key again to exit the app.", Toast.LENGTH_LONG).show()
+            isPressed = true
+
+        }
+
+    }
+
     override fun onBackPressed() {
 
-        super.onBackPressed()
+        when (intent.extras!!.getString("FROM_ACTIVITY")) {
 
-        // Temporary functionality, log out on pressing the back button
-        FirebaseAuth.getInstance().signOut()
+            "NONE" -> doubleTapBack()
+            "LOGIN" -> doubleTapBack()
+
+        }
 
     }
 
@@ -51,7 +74,6 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
         when (v?.id) {
 
-            // Handles changing the users displayname
             R.id.changeDisplaynameButton -> {
 
                 if (changeDisplaynameEditText.visibility == EditText.GONE) {
@@ -76,7 +98,7 @@ class Profile : AppCompatActivity(), View.OnClickListener {
                     val checkOne = keyCode == KeyEvent.KEYCODE_ENTER
                     val checkTwo = event.action == KeyEvent.ACTION_UP
 
-                    val currentlyLoggedInUser : FirebaseUser? = FirebaseAuth.getInstance().currentUser;
+                    val currentlyLoggedInUser : FirebaseUser? = FirebaseAuth.getInstance().currentUser
                     val currentUserInput = changeDisplaynameEditText.text.toString().trim()
 
                     val profileUpdate = UserProfileChangeRequest.Builder().setDisplayName(currentUserInput).build()
@@ -103,7 +125,6 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
             }
 
-            // Handles changing the users email address
             R.id.changeEmailButton -> {
 
                 if (changeEmailEditText.visibility == EditText.GONE) {
@@ -123,44 +144,53 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
                 }
 
-                changeEmailEditText.setOnKeyListener { _, keyCode, event ->
-
-                    val checkOne = keyCode == KeyEvent.KEYCODE_ENTER
-                    val checkTwo = event.action == KeyEvent.ACTION_UP
+                changeEmailEditText.setOnKeyListener { _, keyCode, _ ->
 
                     val currentlyLoggedInUser : FirebaseUser? = FirebaseAuth.getInstance().currentUser
                     val currentUserInput = changeEmailEditText.text.toString().trim()
 
-                    if (!checkOne && !checkTwo) { return@setOnKeyListener false }
+                    if (keyCode == KeyEvent.KEYCODE_ENTER) {
 
-                    if (!Patterns.EMAIL_ADDRESS.matcher(currentUserInput).matches()) {
+                        if (!(Patterns.EMAIL_ADDRESS.matcher(currentUserInput).matches())) {
 
-                        changeEmailEditText.error = "Invalid e-mail address"
-                        changeEmailEditText.requestFocus()
+                            changeEmailEditText.error = "Invalid e-mail address"
+                            changeEmailEditText.requestFocus()
 
-                        return@setOnKeyListener false
+                            return@setOnKeyListener false
+
+                        }
+
+                        currentlyLoggedInUser!!.updateEmail(currentUserInput).addOnCompleteListener {
+
+                            changeEmailEditText.visibility = EditText.GONE
+                            changeEmailEditText.text.clear(); getData()
+
+                            val changedData = hashMapOf(
+
+                                "timestamp" to Timestamp.now()
+
+                            )
+
+                            db.collection("emailChanges").document(currentlyLoggedInUser.uid).set(changedData)
+
+                        }
+
+                        return@setOnKeyListener true
 
                     }
 
-                    currentlyLoggedInUser!!.updateEmail(currentUserInput).addOnCompleteListener {
-
-                        changeEmailEditText.visibility = EditText.GONE
-                        changeEmailEditText.text.clear()
-
-                        val changedData = hashMapOf(
-
-                            "timestamp" to Timestamp.now()
-
-                        )
-
-                        getData()
-                        db.collection("emailChanges").document(currentlyLoggedInUser.uid).set(changedData)
-
-                    }
-
-                    return@setOnKeyListener true
+                    return@setOnKeyListener false
 
                 }
+
+            }
+
+            R.id.logoutButton -> {
+
+                FirebaseAuth.getInstance().signOut()
+
+                intent = Intent(this, Landing::class.java)
+                startActivity(intent)
 
             }
 
@@ -168,7 +198,6 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
     }
 
-    // Gather all the user data and display it on the screen
     private fun getData() {
 
         val currentUser = FirebaseAuth.getInstance().currentUser

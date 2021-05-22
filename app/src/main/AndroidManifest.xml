@@ -11,9 +11,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Smartcolab">
-        <activity android:name=".Profile"></activity>
+        <activity android:name=".Login"></activity>
+        <activity android:name=".Profile" />
         <activity
-            android:name=".Main"
+            android:name=".Landing"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
