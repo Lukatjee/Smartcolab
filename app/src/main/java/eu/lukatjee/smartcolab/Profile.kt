@@ -3,36 +3,23 @@ package eu.lukatjee.smartcolab
 import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
-import android.view.KeyEvent
 import android.view.View
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
-import com.google.firebase.firestore.FirebaseFirestore
-
 
 class Profile : AppCompatActivity(), View.OnClickListener {
-
-    private var db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
-        val changeDisplaynameButton = findViewById<TextView>(R.id.changeDisplaynameButton)
-        changeDisplaynameButton.setOnClickListener(this)
+        val saveEditProfile = findViewById<Button>(R.id.edit_save_profile_button)
+        saveEditProfile.setOnClickListener(this)
 
-        val changeEmailButton = findViewById<TextView>(R.id.changeEmailButton)
-        changeEmailButton.setOnClickListener(this)
-
-        val logoutButton = findViewById<ImageButton>(R.id.logoutButton)
+        val logoutButton = findViewById<Button>(R.id.button2)
         logoutButton.setOnClickListener(this)
 
         getData()
@@ -67,129 +54,93 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
     }
 
+    private var isEditing = false
     override fun onClick(v: View?) {
-
-        val changeDisplaynameEditText = findViewById<EditText>(R.id.editUsernameField)
-        val changeEmailEditText = findViewById<EditText>(R.id.editEmailField)
 
         when (v?.id) {
 
-            R.id.changeDisplaynameButton -> {
+            R.id.edit_save_profile_button -> {
+                val saveEditProfile = findViewById<Button>(R.id.edit_save_profile_button)
 
-                if (changeDisplaynameEditText.visibility == EditText.GONE) {
+                val userNameView = findViewById<EditText>(R.id.displayname_view)
+                val emailView = findViewById<EditText>(R.id.email_view)
 
-                    changeDisplaynameEditText.visibility = EditText.VISIBLE
+                if (!isEditing) {
 
-                } else {
+                    isEditing = true
 
-                    changeDisplaynameEditText.visibility = EditText.GONE
+                    saveEditProfile.text = getString(R.string.save)
+                    saveEditProfile.invalidate()
+
+                    userNameView.isEnabled = true
+                    emailView.isEnabled = true
+
+                    return
 
                 }
 
-                if (changeEmailEditText.visibility == EditText.VISIBLE) {
+                val currentUserDisplayNameInput = userNameView.text.toString().trim()
+                val currentUserEmailInput = emailView.text.toString().trim()
 
-                    changeEmailEditText.visibility = EditText.GONE
-                    changeEmailEditText.text.clear()
+                if (currentUserDisplayNameInput.isEmpty()) {
+
+                    emailView.error = "Invalid username"
+                    emailView.requestFocus()
+
+                    return
 
                 }
 
-                changeDisplaynameEditText.setOnKeyListener { _, keyCode, event ->
+                if (!(Patterns.EMAIL_ADDRESS.matcher(currentUserEmailInput).matches())) {
 
-                    val checkOne = keyCode == KeyEvent.KEYCODE_ENTER
-                    val checkTwo = event.action == KeyEvent.ACTION_UP
+                    emailView.error = "Invalid e-mail address"
+                    emailView.requestFocus()
 
-                    val currentlyLoggedInUser : FirebaseUser? = FirebaseAuth.getInstance().currentUser
-                    val currentUserInput = changeDisplaynameEditText.text.toString().trim()
+                    return
 
-                    val profileUpdate = UserProfileChangeRequest.Builder().setDisplayName(currentUserInput).build()
+                }
 
-                    if (!checkOne && !checkTwo) { return@setOnKeyListener false }
+                val profileUpdate = UserProfileChangeRequest.Builder().setDisplayName(currentUserDisplayNameInput).build()
 
-                    if (currentUserInput.isEmpty()) {
+                FirebaseAuth.getInstance().currentUser!!.updateProfile(profileUpdate).addOnCompleteListener(this){ task ->
 
-                        changeDisplaynameEditText.error = "Invalid username"; changeDisplaynameEditText.requestFocus()
-                        return@setOnKeyListener false
+                    if (task.isSuccessful) {
+
+                        saveProfileDisplayname()
+
+                    } else {
+
+                        println("Oopsie daisy, I couldn't change your displayname")
 
                     }
 
-                    currentlyLoggedInUser!!.updateProfile(profileUpdate).addOnCompleteListener {
+                }
 
-                        changeDisplaynameEditText.visibility = EditText.GONE
-                        changeDisplaynameEditText.text.clear(); getData()
+                FirebaseAuth.getInstance().currentUser!!.updateEmail(currentUserEmailInput).addOnCompleteListener(this) { task ->
+
+                    if (task.isSuccessful) {
+
+                        saveProfileEmail()
+
+                    } else {
+
+                        println("Oopsie daisy, I couldn't change the email address")
 
                     }
 
-                    return@setOnKeyListener true
-
                 }
+
+                saveProfile()
 
             }
 
-            R.id.changeEmailButton -> {
-
-                if (changeEmailEditText.visibility == EditText.GONE) {
-
-                    changeEmailEditText.visibility = EditText.VISIBLE
-
-                } else {
-
-                    changeEmailEditText.visibility = EditText.GONE
-
-                }
-
-                if (changeDisplaynameEditText.visibility == EditText.VISIBLE) {
-
-                    changeDisplaynameEditText.visibility = EditText.GONE
-                    changeDisplaynameEditText.text.clear()
-
-                }
-
-                changeEmailEditText.setOnKeyListener { _, keyCode, _ ->
-
-                    val currentlyLoggedInUser : FirebaseUser? = FirebaseAuth.getInstance().currentUser
-                    val currentUserInput = changeEmailEditText.text.toString().trim()
-
-                    if (keyCode == KeyEvent.KEYCODE_ENTER) {
-
-                        if (!(Patterns.EMAIL_ADDRESS.matcher(currentUserInput).matches())) {
-
-                            changeEmailEditText.error = "Invalid e-mail address"
-                            changeEmailEditText.requestFocus()
-
-                            return@setOnKeyListener false
-
-                        }
-
-                        currentlyLoggedInUser!!.updateEmail(currentUserInput).addOnCompleteListener {
-
-                            changeEmailEditText.visibility = EditText.GONE
-                            changeEmailEditText.text.clear(); getData()
-
-                            val changedData = hashMapOf(
-
-                                "timestamp" to Timestamp.now()
-
-                            )
-
-                            db.collection("emailChanges").document(currentlyLoggedInUser.uid).set(changedData)
-
-                        }
-
-                        return@setOnKeyListener true
-
-                    }
-
-                    return@setOnKeyListener false
-
-                }
-
-            }
-
-            R.id.logoutButton -> {
+            R.id.button2 -> {
 
                 FirebaseAuth.getInstance().signOut()
 
                 intent = Intent(this, Landing::class.java)
+                intent.putExtra("FROM_ACTIVITY", "NONE")
+
                 startActivity(intent)
 
             }
@@ -198,27 +149,40 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
     }
 
+    private fun saveProfile() {
+
+        val saveEditProfile = findViewById<Button>(R.id.edit_save_profile_button)
+
+        saveEditProfile.text = getString(R.string.edit)
+        saveEditProfile.invalidate()
+
+        isEditing = false
+
+    }
+
+    private fun saveProfileDisplayname() {
+
+        val userNameView = findViewById<EditText>(R.id.displayname_view)
+        userNameView.isEnabled = false
+
+    }
+
+    private fun saveProfileEmail() {
+
+        val emailView = findViewById<EditText>(R.id.email_view)
+        emailView.isEnabled = false
+
+    }
+
     private fun getData() {
 
-        val currentUser = FirebaseAuth.getInstance().currentUser
+        val displayNameVw = findViewById<TextView>(R.id.displayname_view)
+        val emailAddressVw = findViewById<TextView>(R.id.email_view)
 
-        var currentUserDisplayname : String? = "N/A"
-        var currentUserEmail : String?
-
-        val displayNameVw = findViewById<TextView>(R.id.displayNameVw)
-        val emailAddressVw = findViewById<TextView>(R.id.emailVw)
-
-        currentUser.let {
-
-            if (currentUser!!.displayName!!.isNotEmpty()) { currentUserDisplayname = currentUser.displayName }
-            currentUserEmail = currentUser.email
-
-        }
-
-        displayNameVw.text = currentUserDisplayname
+        displayNameVw.text = FirebaseAuth.getInstance().currentUser!!.displayName
         displayNameVw.invalidate()
 
-        emailAddressVw.text = currentUserEmail
+        emailAddressVw.text = FirebaseAuth.getInstance().currentUser!!.email
         emailAddressVw.invalidate()
 
     }

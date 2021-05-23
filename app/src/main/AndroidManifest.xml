@@ -15,7 +15,7 @@
         <activity android:name=".Profile" />
         <activity
             android:name=".Landing"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustNothing">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
