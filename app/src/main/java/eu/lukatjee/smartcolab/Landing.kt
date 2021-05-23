@@ -30,6 +30,8 @@ class Landing : AppCompatActivity(), View.OnClickListener {
 
         if (FirebaseAuth.getInstance().currentUser != null) {
 
+            FirebaseAuth.getInstance().currentUser!!.getIdToken(true)
+
             intent = Intent(this, Profile::class.java)
             intent.putExtra("FROM_ACTIVITY", "NONE")
             startActivity(intent)
