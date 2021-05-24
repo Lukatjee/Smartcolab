@@ -32,14 +32,14 @@
         app:layout_constraintTop_toTopOf="@+id/block" />
 
     <EditText
-        android:id="@+id/fieldUsername"
+        android:id="@+id/emailEt"
         android:layout_width="210dp"
         android:layout_height="35dp"
         android:autofillHints=" "
         android:background="@drawable/input_fields"
         android:ems="10"
         android:hint="@string/empty"
-        android:inputType="textPersonName"
+        android:inputType="textEmailAddress"
         android:paddingHorizontal="5dp"
         android:text=""
         android:textColor="@color/white"
@@ -59,10 +59,10 @@
         android:layout_marginTop="15dp"
         app:layout_constraintEnd_toEndOf="@+id/block"
         app:layout_constraintStart_toStartOf="@+id/block"
-        app:layout_constraintTop_toBottomOf="@+id/fieldUsername" />
+        app:layout_constraintTop_toBottomOf="@+id/emailEt" />
 
     <EditText
-        android:id="@+id/fieldPassword"
+        android:id="@+id/passwordEt"
         android:layout_width="210dp"
         android:layout_height="35dp"
         android:autofillHints=" "
@@ -79,7 +79,7 @@
         app:layout_constraintTop_toBottomOf="@+id/passwordText" />
 
     <Button
-        android:id="@+id/loginButton"
+        android:id="@+id/signInBtn"
         android:layout_width="106dp"
         android:layout_height="42dp"
         android:layout_marginEnd="103dp"
@@ -92,11 +92,11 @@
         app:layout_constraintBottom_toBottomOf="@+id/block"
         app:layout_constraintEnd_toEndOf="@+id/block"
         app:layout_constraintStart_toStartOf="@+id/block"
-        app:layout_constraintTop_toBottomOf="@+id/fieldPassword"
+        app:layout_constraintTop_toBottomOf="@+id/passwordEt"
         tools:targetApi="lollipop" />
 
     <TextView
-        android:id="@+id/forgotPin"
+        android:id="@+id/passwordResetBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/forgot_pin"
@@ -105,8 +105,8 @@
         android:layout_marginBottom="25dp"
         app:layout_constraintBottom_toBottomOf="@+id/block"
         app:layout_constraintEnd_toEndOf="@+id/block"
-        app:layout_constraintStart_toEndOf="@+id/loginButton"
-        app:layout_constraintTop_toBottomOf="@+id/fieldPassword"
+        app:layout_constraintStart_toEndOf="@+id/signInBtn"
+        app:layout_constraintTop_toBottomOf="@+id/passwordEt"
         android:layout_marginEnd="40dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

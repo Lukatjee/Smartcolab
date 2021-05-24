@@ -9,14 +9,12 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.installations.FirebaseInstallations
+import io.paperdb.Paper
+import java.util.*
 
 class Login : AppCompatActivity(), View.OnClickListener {
 
-    private var db = FirebaseFirestore.getInstance()
     private var auth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,8 +22,13 @@ class Login : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
 
-        val forgotPin = findViewById<TextView>(R.id.forgotPin); forgotPin.setOnClickListener(this)
-        val loginButton = findViewById<Button>(R.id.loginButton); loginButton.setOnClickListener(this)
+        Paper.init(this)
+
+        val passwordResetBtn = findViewById<TextView>(R.id.passwordResetBtn)
+        passwordResetBtn.setOnClickListener(this)
+
+        val signInBtn = findViewById<Button>(R.id.signInBtn)
+        signInBtn.setOnClickListener(this)
 
     }
 
@@ -33,30 +36,31 @@ class Login : AppCompatActivity(), View.OnClickListener {
 
         when (v?.id) {
 
-            R.id.loginButton -> userLogin(); R.id.forgotPin -> {
+            R.id.signInBtn -> userLogin()
+            R.id.passwordResetBtn -> {
 
-            val usernameInput = findViewById<EditText>(R.id.fieldUsername)
-            val usernameData = usernameInput.text.toString().trim()
+            val emailEt = findViewById<EditText>(R.id.emailEt)
+            val emailIpt = emailEt.text.toString().trim()
 
-            if (!Patterns.EMAIL_ADDRESS.matcher(usernameData).matches()) {
+            if (!Patterns.EMAIL_ADDRESS.matcher(emailIpt).matches()) {
 
-                usernameInput.error = "Invalid e-mail address"
-                usernameInput.requestFocus()
+                emailEt.error = "Invalid e-mail address"
+                emailEt.requestFocus()
 
                 return
 
             }
 
-            auth.sendPasswordResetEmail(usernameData).addOnCompleteListener { task ->
+            auth.sendPasswordResetEmail(emailIpt).addOnCompleteListener { task ->
 
                 if (!task.isSuccessful) {
 
-                    Toast.makeText(this, "This email address is not in our database", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "This email does not belong to an existing user", Toast.LENGTH_LONG).show()
                     return@addOnCompleteListener
 
                 }
 
-                Toast.makeText(this, "Email has been sent", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Successfully sent a password reset email", Toast.LENGTH_LONG).show()
 
             }
 
@@ -66,28 +70,31 @@ class Login : AppCompatActivity(), View.OnClickListener {
 
     private fun userLogin() {
 
-        val usernameInput = findViewById<EditText>(R.id.fieldUsername); val usernameData = usernameInput.text.toString().trim()
-        val passwordInput = findViewById<EditText>(R.id.fieldPassword); val passwordData = passwordInput.text.toString().trim()
+        val emailEt = findViewById<EditText>(R.id.emailEt)
+        val emailIpt = emailEt.text.toString().trim().toLowerCase(Locale.ROOT)
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(usernameData).matches()) {
+        val passwordEt = findViewById<EditText>(R.id.passwordEt)
+        val passwordIpt = passwordEt.text.toString().trim()
 
-            usernameInput.error = "Invalid e-mail address"
-            usernameInput.requestFocus()
+        if (!Patterns.EMAIL_ADDRESS.matcher(emailIpt).matches()) {
 
-            return
-
-        }
-
-        if (passwordData.isEmpty()) {
-
-            passwordInput.error = "Password is required"
-            passwordInput.requestFocus()
+            emailEt.error = "Invalid e-mail address"
+            emailEt.requestFocus()
 
             return
 
         }
 
-        auth.signInWithEmailAndPassword(usernameData, passwordData).addOnCompleteListener(this) { task ->
+        if (passwordIpt.isEmpty()) {
+
+            passwordEt.error = "Password is required"
+            passwordEt.requestFocus()
+
+            return
+
+        }
+
+        auth.signInWithEmailAndPassword(emailIpt, passwordIpt).addOnCompleteListener(this) { task ->
 
             if (task.isSuccessful) {
 
@@ -95,12 +102,12 @@ class Login : AppCompatActivity(), View.OnClickListener {
                 intent.putExtra("FROM_ACTIVITY", "LOGIN")
                 startActivity(intent)
 
-                val lastLogin = hashMapOf("timestamp" to Timestamp.now())
-                db.collection("lastLogin").document(FirebaseInstallations.getInstance().id.toString()).set(lastLogin)
+                val userData = hashMapOf(emailIpt to passwordIpt)
+                Paper.book().write("userData", userData)
 
             } else {
 
-                Toast.makeText(this, "Failed to log in, please check your credentials!", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Failed to log in, please check the entered credentials", Toast.LENGTH_LONG).show()
 
             }
 

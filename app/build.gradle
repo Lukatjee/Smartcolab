@@ -37,6 +37,7 @@ android {
 
 dependencies {
 
+    implementation 'io.github.pilgr:paperdb:2.7.1'
     implementation platform('com.google.firebase:firebase-bom:28.0.0')
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.google.firebase:firebase-analytics-ktx'

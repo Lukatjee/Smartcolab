@@ -4,8 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import io.paperdb.Paper
 
 
 class Landing : AppCompatActivity(), View.OnClickListener {
@@ -13,6 +15,9 @@ class Landing : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?){
 
         super.onCreate(savedInstanceState)
+
+        Paper.init(this)
+
         setContentView(R.layout.activity_landing)
         intent.putExtra("FROM_ACTIVITY", "NONE")
 
@@ -22,19 +27,36 @@ class Landing : AppCompatActivity(), View.OnClickListener {
         val signUpButton = findViewById<Button>(R.id.signUpButton)
         signUpButton.setOnClickListener(this)
 
+
     }
 
     public override fun onStart() {
 
         super.onStart()
 
-        if (FirebaseAuth.getInstance().currentUser != null) {
+        val userData = Paper.book().read("userData", hashMapOf<String, String>())
 
-            FirebaseAuth.getInstance().currentUser!!.getIdToken(true)
+        if (userData.isNotEmpty()) {
 
-            intent = Intent(this, Profile::class.java)
-            intent.putExtra("FROM_ACTIVITY", "NONE")
-            startActivity(intent)
+            val userDataKey = userData.keys.first()
+            val userDataPassword = userData[userDataKey] ?: return
+
+            FirebaseAuth.getInstance().signInWithEmailAndPassword(userDataKey, userDataPassword).addOnCompleteListener(this) { task ->
+
+                    if (task.isSuccessful) {
+
+                        intent = Intent(this, Profile::class.java)
+                        intent.putExtra("FROM_ACTIVITY", "NONE")
+
+                        startActivity(intent)
+
+                    } else {
+
+                        Toast.makeText(this, "Saved credentials did not match an existing account", Toast.LENGTH_LONG).show()
+
+                    }
+
+                }
 
         }
 
