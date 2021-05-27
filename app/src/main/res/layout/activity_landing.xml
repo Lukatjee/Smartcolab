@@ -1,84 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
-    app:layout_constraintVertical_chainStyle="packed">
+    android:background="@drawable/background" >
 
-    <ImageView
-        android:id="@+id/block"
-        android:layout_width="282dp"
-        android:layout_height="284dp"
-        android:contentDescription="@string/empty"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/block" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_constraintVertical_chainStyle="spread">
 
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
-        android:contentDescription="@string/empty"
-        android:paddingBottom="5dp"
-        app:layout_constraintEnd_toEndOf="@+id/block"
-        app:layout_constraintHorizontal_bias="0.494"
-        app:layout_constraintStart_toStartOf="@+id/block"
-        app:layout_constraintTop_toTopOf="@+id/block"
-        app:srcCompat="@drawable/logo" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
 
-    <ImageView
-        android:id="@+id/divider_three"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/signInButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/logo"
-        app:srcCompat="@drawable/div"
-        android:contentDescription="@string/empty" />
+            <ImageView
+                android:id="@+id/logoIv"
 
-    <Button
-        android:id="@+id/signInButton"
-        android:layout_width="206dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="12dp"
-        android:backgroundTint="@color/customGreen"
-        android:text="@string/sign_in"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="@+id/block"
-        app:layout_constraintStart_toStartOf="@+id/block"
-        app:layout_constraintTop_toBottomOf="@id/divider_three"
-        tools:targetApi="lollipop" />
+                android:layout_width="240dp"
+                android:layout_height="60dp"
 
-    <Button
-        android:id="@+id/signUpButton"
-        android:layout_width="206dp"
-        android:layout_height="42dp"
-        android:backgroundTint="@color/customGreen"
-        android:text="@string/sign_up"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="@+id/signInButton"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/signInButton"
-        app:layout_constraintTop_toBottomOf="@+id/signInButton"
-        tools:targetApi="lollipop" />
+                android:layout_marginTop="255dp"
 
-    <ImageView
-        android:id="@+id/divider_two"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/empty"
-        app:layout_constraintBottom_toBottomOf="@+id/block"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signUpButton"
-        app:layout_constraintVertical_bias="0.150
-"
-        app:srcCompat="@drawable/div" />
+                android:contentDescription="@string/empty"
+
+                app:srcCompat="@drawable/logo" />
+
+            <ImageView
+                android:id="@+id/dividerOne"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="20dp"
+
+                android:contentDescription="@string/empty"
+
+                app:srcCompat="@drawable/div" />
+
+            <Button
+                android:id="@+id/signInButton"
+
+                android:layout_width="175dp"
+                android:layout_height="42dp"
+
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/green_btn"
+
+                android:text="@string/sign_in"
+
+                android:textColor="@color/white"
+
+                />
+
+            <Button
+                android:id="@+id/signUpButton"
+
+                android:layout_width="175dp"
+                android:layout_height="42dp"
+
+                android:layout_marginBottom="20dp"
+
+                android:background="@drawable/green_btn"
+
+                android:text="@string/sign_up"
+                android:textColor="@color/white" />
+
+            <ImageView
+                android:id="@+id/imageView3"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_marginBottom="4dp"
+
+                app:srcCompat="@drawable/div"
+                android:contentDescription="@string/empty" />
+
+            <TextView
+                android:id="@+id/textView"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:gravity="center_horizontal"
+                android:textColor="@color/lightgray"
+                android:textSize="12sp"
+                android:text="@string/made_by_lukatjee" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

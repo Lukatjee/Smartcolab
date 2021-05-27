@@ -5,108 +5,91 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
+    android:background="@color/darkgray"
     app:layout_constraintVertical_chainStyle="packed">
 
-    <ImageView
-        android:id="@+id/block"
-        android:layout_width="282dp"
-        android:layout_height="284dp"
-        android:contentDescription="@string/backgroundDesc"
-        android:src="@drawable/block"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="50dp">
 
-    <TextView
-        android:id="@+id/usernameText"
-        android:layout_marginTop="54dp"
-        android:layout_width="210dp"
-        android:layout_height="25dp"
-        android:text="@string/txtViewUsername"
-        android:textColor="@color/white"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="@+id/block"
-        app:layout_constraintStart_toStartOf="@+id/block"
-        app:layout_constraintTop_toTopOf="@+id/block" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/emailEt"
-        android:layout_width="210dp"
-        android:layout_height="35dp"
-        android:autofillHints=" "
-        android:background="@drawable/input_fields"
-        android:ems="10"
-        android:hint="@string/empty"
-        android:inputType="textEmailAddress"
-        android:paddingHorizontal="5dp"
-        android:text=""
-        android:textColor="@color/white"
-        android:textCursorDrawable="@null"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="@+id/block"
-        app:layout_constraintStart_toStartOf="@+id/block"
-        app:layout_constraintTop_toBottomOf="@+id/usernameText" />
+            <TextView
+                android:id="@+id/usernameText"
+                android:layout_width="210dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="255dp"
+                android:layout_marginBottom="3dp"
+                android:text="@string/txtViewUsername"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
 
-    <TextView
-        android:id="@+id/passwordText"
-        android:layout_width="210dp"
-        android:layout_height="25dp"
-        android:text="@string/txtViewPassword"
-        android:textColor="@color/white"
-        android:textSize="18sp"
-        android:layout_marginTop="15dp"
-        app:layout_constraintEnd_toEndOf="@+id/block"
-        app:layout_constraintStart_toStartOf="@+id/block"
-        app:layout_constraintTop_toBottomOf="@+id/emailEt" />
+            <EditText
+                android:id="@+id/emailEt"
+                android:layout_width="210dp"
+                android:layout_height="35dp"
+                android:autofillHints=" "
+                android:background="@drawable/input_fields"
+                android:ems="10"
+                android:hint="@string/empty"
+                android:inputType="textEmailAddress"
+                android:paddingHorizontal="5dp"
+                android:text=""
+                android:textColor="@color/white"
+                android:textCursorDrawable="@null"
+                android:textSize="18sp" />
 
-    <EditText
-        android:id="@+id/passwordEt"
-        android:layout_width="210dp"
-        android:layout_height="35dp"
-        android:autofillHints=" "
-        android:background="@drawable/input_fields"
-        android:ems="10"
-        android:hint="@string/empty"
-        android:inputType="textPassword"
-        android:paddingHorizontal="5dp"
-        android:textColor="@color/white"
-        android:textCursorDrawable="@null"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="@+id/block"
-        app:layout_constraintStart_toStartOf="@+id/block"
-        app:layout_constraintTop_toBottomOf="@+id/passwordText" />
+            <TextView
+                android:id="@+id/passwordText"
+                android:layout_width="210dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="3dp"
+                android:text="@string/txtViewPassword"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
 
-    <Button
-        android:id="@+id/signInBtn"
-        android:layout_width="106dp"
-        android:layout_height="42dp"
-        android:layout_marginEnd="103dp"
-        android:layout_marginRight="103dp"
-        android:backgroundTint="@color/btn_color"
-        android:text="@string/buttonTxt"
-        android:textColor="@color/white"
-        android:textSize="14sp"
-        android:layout_marginBottom="25dp"
-        app:layout_constraintBottom_toBottomOf="@+id/block"
-        app:layout_constraintEnd_toEndOf="@+id/block"
-        app:layout_constraintStart_toStartOf="@+id/block"
-        app:layout_constraintTop_toBottomOf="@+id/passwordEt"
-        tools:targetApi="lollipop" />
+            <EditText
+                android:id="@+id/passwordEt"
+                android:layout_width="210dp"
+                android:layout_height="35dp"
+                android:layout_marginBottom="15dp"
+                android:autofillHints=" "
+                android:background="@drawable/input_fields"
+                android:ems="10"
+                android:hint="@string/empty"
+                android:inputType="textPassword"
+                android:paddingHorizontal="5dp"
+                android:textColor="@color/white"
+                android:textCursorDrawable="@null"
+                android:textSize="18sp" />
 
-    <TextView
-        android:id="@+id/passwordResetBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/forgot_pin"
-        android:textColor="@color/white"
-        android:layout_marginRight="40dp"
-        android:layout_marginBottom="25dp"
-        app:layout_constraintBottom_toBottomOf="@+id/block"
-        app:layout_constraintEnd_toEndOf="@+id/block"
-        app:layout_constraintStart_toEndOf="@+id/signInBtn"
-        app:layout_constraintTop_toBottomOf="@+id/passwordEt"
-        android:layout_marginEnd="40dp" />
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/div" />
+
+            <Button
+                android:id="@+id/signInBtn"
+                android:layout_width="175dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="15dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/green_btn"
+                android:text="@string/buttonTxt"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

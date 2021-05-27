@@ -24,49 +24,12 @@ class Login : AppCompatActivity(), View.OnClickListener {
 
         Paper.init(this)
 
-        val passwordResetBtn = findViewById<TextView>(R.id.passwordResetBtn)
-        passwordResetBtn.setOnClickListener(this)
-
         val signInBtn = findViewById<Button>(R.id.signInBtn)
         signInBtn.setOnClickListener(this)
 
     }
 
-    override fun onClick(v: View?) {
-
-        when (v?.id) {
-
-            R.id.signInBtn -> userLogin()
-            R.id.passwordResetBtn -> {
-
-            val emailEt = findViewById<EditText>(R.id.emailEt)
-            val emailIpt = emailEt.text.toString().trim()
-
-            if (!Patterns.EMAIL_ADDRESS.matcher(emailIpt).matches()) {
-
-                emailEt.error = "Invalid e-mail address"
-                emailEt.requestFocus()
-
-                return
-
-            }
-
-            auth.sendPasswordResetEmail(emailIpt).addOnCompleteListener { task ->
-
-                if (!task.isSuccessful) {
-
-                    Toast.makeText(this, "This email does not belong to an existing user", Toast.LENGTH_LONG).show()
-                    return@addOnCompleteListener
-
-                }
-
-                Toast.makeText(this, "Successfully sent a password reset email", Toast.LENGTH_LONG).show()
-
-            }
-
-        }}
-
-    }
+    override fun onClick(v: View?) { when (v?.id) { R.id.signInBtn -> userLogin() } }
 
     private fun userLogin() {
 

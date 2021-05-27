@@ -1,6 +1,7 @@
 package eu.lukatjee.smartcolab
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Patterns
 import android.view.View
@@ -8,6 +9,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
+import com.squareup.picasso.Picasso
 import io.paperdb.Paper
 
 class Profile : AppCompatActivity(), View.OnClickListener {
@@ -188,6 +190,11 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
         emailEt.text = FirebaseAuth.getInstance().currentUser!!.email
         emailEt.invalidate()
+
+        val photoUrl = FirebaseAuth.getInstance().currentUser!!.photoUrl
+        val imageVw = findViewById<ImageView>(R.id.profilePictureVw)
+
+        Picasso.get().load(photoUrl).into(imageVw)
 
     }
 
