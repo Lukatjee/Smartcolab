@@ -9,7 +9,10 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
+import de.hdodenhof.circleimageview.CircleImageView
 import io.paperdb.Paper
 
 class Profile : AppCompatActivity(), View.OnClickListener {
@@ -24,6 +27,9 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
         val logoutButton = findViewById<Button>(R.id.logoutBtn)
         logoutButton.setOnClickListener(this)
+
+        val profileImageVw = findViewById<CircleImageView>(R.id.profilePictureVw)
+        profileImageVw.setOnClickListener(this)
 
         getData()
 
@@ -151,6 +157,18 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
             }
 
+            R.id.profilePictureVw -> {
+
+                val mAuth = FirebaseAuth.getInstance()
+                val databaseReference = FirebaseDatabase.getInstance().reference.child("User")
+                val storageReference = FirebaseStorage.getInstance().reference.child("Profile")
+
+                val profilePictureVw = findViewById<ImageView>(R.id.profilePictureVw)
+
+                CropImage
+
+            }
+
         }
 
     }
@@ -192,9 +210,6 @@ class Profile : AppCompatActivity(), View.OnClickListener {
         emailEt.invalidate()
 
         val photoUrl = FirebaseAuth.getInstance().currentUser!!.photoUrl
-        val imageVw = findViewById<ImageView>(R.id.profilePictureVw)
-
-        Picasso.get().load(photoUrl).into(imageVw)
 
     }
 
