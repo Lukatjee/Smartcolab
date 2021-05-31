@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Telegram</string>
+    <string name="app_name">Zorion</string>
     <string name="txtViewUsername">E-mail:</string>
     <string name="txtViewPassword">Password:</string>
     <string name="buttonTxt">Log in</string>

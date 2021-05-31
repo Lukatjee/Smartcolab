@@ -8,13 +8,11 @@ import android.provider.MediaStore
 import android.util.Patterns
 import android.view.View
 import android.widget.*
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.storage.FirebaseStorage
+import com.squareup.picasso.Picasso
 import io.paperdb.Paper
 
 
@@ -67,7 +65,6 @@ class Profile : AppCompatActivity(), View.OnClickListener {
     }
 
     private var isEditing = false
-    private val storageRef = FirebaseStorage.getInstance().reference
 
     override fun onClick(v: View?) {
 
@@ -155,24 +152,31 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
             R.id.profilePictureVw -> {
 
-                var someActivityResultLauncher = registerForActivityResult(
+                if (isEditing) {
 
-                    StartActivityForResult(),
-                    ActivityResultCallback { result ->
+                    val openGalleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                    startActivityForResult(openGalleryIntent, 1000)
 
-                        if (result.resultCode == Activity.RESULT_OK) {
+                }
 
-                            val data = result.data
+            }
 
-                        }
-                    })
+        }
 
-                val openGalleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+    }
 
-                someActivityResultLauncher.launch(openGalleryIntent)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
-                val imageUrl = FirebaseAuth.getInstance().currentUser!!.photoUrl
-                uploadImageToFirebase(imageUrl)
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1000) {
+
+            if (resultCode == Activity.RESULT_OK) {
+
+                val imageUri = data!!.data
+                uploadImageToFirebase(imageUri)
+
+                val profileChangeRqst = UserProfileChangeRequest.Builder().setPhotoUri(imageUri).build()
+                FirebaseAuth.getInstance().currentUser!!.updateProfile(profileChangeRqst)
 
             }
 
@@ -182,12 +186,19 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
     private fun uploadImageToFirebase(imageUrl : Uri?) {
 
-        val fileRef = storageRef.child("profile.png")
+        val storageRef = FirebaseStorage.getInstance().reference
+        val fileRef = storageRef.child("profile_${FirebaseAuth.getInstance().currentUser!!.displayName}.png")
 
         fileRef.putFile(imageUrl!!).addOnCompleteListener { task ->
 
             if (task.isSuccessful) {
 
+                fileRef.downloadUrl.addOnSuccessListener { uri : Uri? ->
+
+                    val profilePictureVw = findViewById<ImageView>(R.id.profilePictureVw)
+                    Picasso.get().load(uri).into(profilePictureVw)
+
+                }
                 Toast.makeText(this, "Successfully uploaded the image", Toast.LENGTH_LONG).show()
 
             } else {
@@ -236,7 +247,14 @@ class Profile : AppCompatActivity(), View.OnClickListener {
         emailEt.text = FirebaseAuth.getInstance().currentUser!!.email
         emailEt.invalidate()
 
-        val photoUrl = FirebaseAuth.getInstance().currentUser!!.photoUrl
+        val storageRef = FirebaseStorage.getInstance().reference
+        val fileRef = storageRef.child("profile_${FirebaseAuth.getInstance().currentUser!!.displayName}.png")
+        fileRef.downloadUrl.addOnSuccessListener { uri : Uri? ->
+
+            val profilePictureVw = findViewById<ImageView>(R.id.profilePictureVw)
+            Picasso.get().load(uri).into(profilePictureVw)
+
+        }
 
     }
 

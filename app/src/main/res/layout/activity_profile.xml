@@ -19,18 +19,26 @@
             android:orientation="vertical"
             android:gravity="center_horizontal">
 
-            <ImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profilePictureVw"
                 android:layout_marginTop="200dp"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:src="@drawable/kenobi"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@drawable/img_border"
                 android:contentDescription="@string/empty" />
+
+            <ImageView
+                android:id="@+id/divider_five"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:contentDescription="@string/empty"
+                app:srcCompat="@drawable/div" />
 
             <EditText
                 android:id="@+id/displaynameEt"
                 android:layout_width="225dp"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="10dp"
                 android:drawablePadding="8dp"
                 android:layout_height="32dp"
                 android:autofillHints=" "
