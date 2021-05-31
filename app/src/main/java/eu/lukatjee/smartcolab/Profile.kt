@@ -1,19 +1,22 @@
 package eu.lukatjee.smartcolab
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Patterns
 import android.view.View
 import android.widget.*
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
-import com.squareup.picasso.Picasso
-import de.hdodenhof.circleimageview.CircleImageView
 import io.paperdb.Paper
+
 
 class Profile : AppCompatActivity(), View.OnClickListener {
 
@@ -28,8 +31,8 @@ class Profile : AppCompatActivity(), View.OnClickListener {
         val logoutButton = findViewById<Button>(R.id.logoutBtn)
         logoutButton.setOnClickListener(this)
 
-        val profileImageVw = findViewById<CircleImageView>(R.id.profilePictureVw)
-        profileImageVw.setOnClickListener(this)
+        val profilePictureVw = findViewById<ImageView>(R.id.profilePictureVw)
+        profilePictureVw.setOnClickListener(this)
 
         getData()
 
@@ -64,6 +67,7 @@ class Profile : AppCompatActivity(), View.OnClickListener {
     }
 
     private var isEditing = false
+    private val storageRef = FirebaseStorage.getInstance().reference
 
     override fun onClick(v: View?) {
 
@@ -111,17 +115,13 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
                 }
 
-                val proflieChangeRqst = UserProfileChangeRequest.Builder().setDisplayName(displaynameIpt).build()
+                val profileChangeRqst = UserProfileChangeRequest.Builder().setDisplayName(displaynameIpt).build()
 
-                FirebaseAuth.getInstance().currentUser!!.updateProfile(proflieChangeRqst).addOnCompleteListener(this){ task ->
+                FirebaseAuth.getInstance().currentUser!!.updateProfile(profileChangeRqst).addOnCompleteListener(this){ task ->
 
                     if (task.isSuccessful) {
 
                         displaynameSv()
-
-                    } else {
-
-                        println("Oopsie daisy, I couldn't change your displayname")
 
                     }
 
@@ -132,10 +132,6 @@ class Profile : AppCompatActivity(), View.OnClickListener {
                     if (task.isSuccessful) {
 
                         emailSv()
-
-                    } else {
-
-                        println("Oopsie daisy, I couldn't change the email address")
 
                     }
 
@@ -159,13 +155,44 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
             R.id.profilePictureVw -> {
 
-                val mAuth = FirebaseAuth.getInstance()
-                val databaseReference = FirebaseDatabase.getInstance().reference.child("User")
-                val storageReference = FirebaseStorage.getInstance().reference.child("Profile")
+                var someActivityResultLauncher = registerForActivityResult(
 
-                val profilePictureVw = findViewById<ImageView>(R.id.profilePictureVw)
+                    StartActivityForResult(),
+                    ActivityResultCallback { result ->
 
-                CropImage
+                        if (result.resultCode == Activity.RESULT_OK) {
+
+                            val data = result.data
+
+                        }
+                    })
+
+                val openGalleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+
+                someActivityResultLauncher.launch(openGalleryIntent)
+
+                val imageUrl = FirebaseAuth.getInstance().currentUser!!.photoUrl
+                uploadImageToFirebase(imageUrl)
+
+            }
+
+        }
+
+    }
+
+    private fun uploadImageToFirebase(imageUrl : Uri?) {
+
+        val fileRef = storageRef.child("profile.png")
+
+        fileRef.putFile(imageUrl!!).addOnCompleteListener { task ->
+
+            if (task.isSuccessful) {
+
+                Toast.makeText(this, "Successfully uploaded the image", Toast.LENGTH_LONG).show()
+
+            } else {
+
+                println("Oh no")
 
             }
 

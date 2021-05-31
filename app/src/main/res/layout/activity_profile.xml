@@ -19,7 +19,7 @@
             android:orientation="vertical"
             android:gravity="center_horizontal">
 
-            <de.hdodenhof.circleimageview.CircleImageView
+            <ImageView
                 android:id="@+id/profilePictureVw"
                 android:layout_marginTop="200dp"
                 android:layout_width="150dp"
