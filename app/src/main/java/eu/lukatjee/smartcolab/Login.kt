@@ -7,7 +7,6 @@ import android.util.Patterns
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import io.paperdb.Paper
@@ -15,7 +14,15 @@ import java.util.*
 
 class Login : AppCompatActivity(), View.OnClickListener {
 
-    private var auth = FirebaseAuth.getInstance()
+    private lateinit var fAuth : FirebaseAuth
+
+    private lateinit var signInBtn : Button
+    private lateinit var emailEt : EditText
+    private lateinit var passwordEt : EditText
+
+    private lateinit var messageFailedLogin : String
+    private lateinit var messageIncorrectEmail : String
+    private lateinit var messageIncorrectPassword : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -23,8 +30,16 @@ class Login : AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_sign_in)
 
         Paper.init(this)
+        fAuth = FirebaseAuth.getInstance()
 
-        val signInBtn = findViewById<Button>(R.id.signInBtn)
+        signInBtn = findViewById(R.id.signInBtn)
+        emailEt = findViewById(R.id.emailEt)
+        passwordEt = findViewById(R.id.passwordEt)
+
+        messageFailedLogin = "Failed to log in, please check the entered credentials"
+        messageIncorrectEmail = "Invalid e-mail address"
+        messageIncorrectPassword = "Password is required"
+
         signInBtn.setOnClickListener(this)
 
     }
@@ -33,15 +48,12 @@ class Login : AppCompatActivity(), View.OnClickListener {
 
     private fun userLogin() {
 
-        val emailEt = findViewById<EditText>(R.id.emailEt)
         val emailIpt = emailEt.text.toString().trim().toLowerCase(Locale.ROOT)
-
-        val passwordEt = findViewById<EditText>(R.id.passwordEt)
         val passwordIpt = passwordEt.text.toString().trim()
 
         if (!Patterns.EMAIL_ADDRESS.matcher(emailIpt).matches()) {
 
-            emailEt.error = "Invalid e-mail address"
+            emailEt.error = messageIncorrectEmail
             emailEt.requestFocus()
 
             return
@@ -50,14 +62,14 @@ class Login : AppCompatActivity(), View.OnClickListener {
 
         if (passwordIpt.isEmpty()) {
 
-            passwordEt.error = "Password is required"
+            passwordEt.error = messageIncorrectPassword
             passwordEt.requestFocus()
 
             return
 
         }
 
-        auth.signInWithEmailAndPassword(emailIpt, passwordIpt).addOnCompleteListener(this) { task ->
+        fAuth.signInWithEmailAndPassword(emailIpt, passwordIpt).addOnCompleteListener(this) { task ->
 
             if (task.isSuccessful) {
 
@@ -70,7 +82,7 @@ class Login : AppCompatActivity(), View.OnClickListener {
 
             } else {
 
-                Toast.makeText(this, "Failed to log in, please check the entered credentials", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, messageFailedLogin, Toast.LENGTH_LONG).show()
 
             }
 

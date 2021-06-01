@@ -10,33 +10,56 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
+import de.hdodenhof.circleimageview.CircleImageView
 import io.paperdb.Paper
 
 
 class Profile : AppCompatActivity(), View.OnClickListener {
+
+    private var isPressed = false
+    private var isEditing = false
+
+    private lateinit var fAuth : FirebaseAuth
+    private lateinit var currentUser : FirebaseUser
+
+    private lateinit var storageRef : StorageReference
+    private lateinit var fileRef : StorageReference
+
+    private lateinit var displaynameEt : TextView
+    private lateinit var emailEt : TextView
+    private lateinit var editProfileBtn : Button
+    private lateinit var profilePictureVw : CircleImageView
+    private lateinit var logoutButton : Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
-        val saveEditProfile = findViewById<Button>(R.id.editProfileBtn)
-        saveEditProfile.setOnClickListener(this)
+        fAuth = FirebaseAuth.getInstance()
+        currentUser = fAuth.currentUser!!
 
-        val logoutButton = findViewById<Button>(R.id.logoutBtn)
+        storageRef = FirebaseStorage.getInstance().reference
+        fileRef = storageRef.child("profile_${currentUser.displayName}.png")
+
+        displaynameEt = findViewById(R.id.displaynameEt)
+        emailEt = findViewById(R.id.emailEtProfile)
+        editProfileBtn = findViewById(R.id.editProfileBtn)
+        profilePictureVw = findViewById(R.id.profilePictureVw)
+        logoutButton = findViewById<Button>(R.id.logoutBtn)
+
+        editProfileBtn.setOnClickListener(this)
+        profilePictureVw.setOnClickListener(this)
         logoutButton.setOnClickListener(this)
 
-        val profilePictureVw = findViewById<ImageView>(R.id.profilePictureVw)
-        profilePictureVw.setOnClickListener(this)
-
-        getData()
+        getData() // Sync all data for the profile page
 
     }
-
-    private var isPressed = false
 
     private fun doubleTapBack() {
 
@@ -64,18 +87,11 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
     }
 
-    private var isEditing = false
-
     override fun onClick(v: View?) {
 
         when (v?.id) {
 
             R.id.editProfileBtn -> {
-
-                val editProfileBtn = findViewById<Button>(R.id.editProfileBtn)
-
-                val displaynameEt = findViewById<EditText>(R.id.displaynameEt)
-                val emailEt = findViewById<EditText>(R.id.emailEtProfile)
 
                 if (!isEditing) {
 
@@ -114,7 +130,7 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
                 val profileChangeRqst = UserProfileChangeRequest.Builder().setDisplayName(displaynameIpt).build()
 
-                FirebaseAuth.getInstance().currentUser!!.updateProfile(profileChangeRqst).addOnCompleteListener(this){ task ->
+                currentUser.updateProfile(profileChangeRqst).addOnCompleteListener(this){ task ->
 
                     if (task.isSuccessful) {
 
@@ -124,7 +140,7 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
                 }
 
-                FirebaseAuth.getInstance().currentUser!!.updateEmail(emailIpt).addOnCompleteListener(this) { task ->
+                currentUser.updateEmail(emailIpt).addOnCompleteListener(this) { task ->
 
                     if (task.isSuccessful) {
 
@@ -140,7 +156,7 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
             R.id.logoutBtn -> {
 
-                FirebaseAuth.getInstance().signOut()
+                fAuth.signOut()
 
                 intent = Intent(this, Landing::class.java)
                 intent.putExtra("FROM_ACTIVITY", "NONE")
@@ -168,6 +184,7 @@ class Profile : AppCompatActivity(), View.OnClickListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
         super.onActivityResult(requestCode, resultCode, data)
+
         if (requestCode == 1000) {
 
             if (resultCode == Activity.RESULT_OK) {
@@ -176,7 +193,7 @@ class Profile : AppCompatActivity(), View.OnClickListener {
                 uploadImageToFirebase(imageUri)
 
                 val profileChangeRqst = UserProfileChangeRequest.Builder().setPhotoUri(imageUri).build()
-                FirebaseAuth.getInstance().currentUser!!.updateProfile(profileChangeRqst)
+                currentUser.updateProfile(profileChangeRqst)
 
             }
 
@@ -186,16 +203,12 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
     private fun uploadImageToFirebase(imageUrl : Uri?) {
 
-        val storageRef = FirebaseStorage.getInstance().reference
-        val fileRef = storageRef.child("profile_${FirebaseAuth.getInstance().currentUser!!.displayName}.png")
-
         fileRef.putFile(imageUrl!!).addOnCompleteListener { task ->
 
             if (task.isSuccessful) {
 
                 fileRef.downloadUrl.addOnSuccessListener { uri : Uri? ->
 
-                    val profilePictureVw = findViewById<ImageView>(R.id.profilePictureVw)
                     Picasso.get().load(uri).into(profilePictureVw)
 
                 }
@@ -213,8 +226,6 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
     private fun fullProfileSv() {
 
-        val editProfileBtn = findViewById<Button>(R.id.editProfileBtn)
-
         editProfileBtn.text = getString(R.string.edit)
         editProfileBtn.invalidate()
 
@@ -224,34 +235,27 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
     private fun displaynameSv() {
 
-        val displaynameEt = findViewById<EditText>(R.id.displaynameEt)
         displaynameEt.isEnabled = false
 
     }
 
     private fun emailSv() {
 
-        val emailEt = findViewById<EditText>(R.id.emailEtProfile)
         emailEt.isEnabled = false
 
     }
 
     private fun getData() {
 
-        val displaynameEt = findViewById<TextView>(R.id.displaynameEt)
-        val emailEt = findViewById<TextView>(R.id.emailEtProfile)
-
         displaynameEt.text = FirebaseAuth.getInstance().currentUser!!.displayName
-        displaynameEt.invalidate()
-
         emailEt.text = FirebaseAuth.getInstance().currentUser!!.email
+
+        displaynameEt.invalidate()
         emailEt.invalidate()
 
-        val storageRef = FirebaseStorage.getInstance().reference
-        val fileRef = storageRef.child("profile_${FirebaseAuth.getInstance().currentUser!!.displayName}.png")
         fileRef.downloadUrl.addOnSuccessListener { uri : Uri? ->
 
-            val profilePictureVw = findViewById<ImageView>(R.id.profilePictureVw)
+            profilePictureVw = findViewById(R.id.profilePictureVw)
             Picasso.get().load(uri).into(profilePictureVw)
 
         }

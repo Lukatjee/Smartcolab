@@ -22,8 +22,8 @@
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profilePictureVw"
                 android:layout_marginTop="200dp"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="125dp"
+                android:layout_height="125dp"
                 android:background="@drawable/img_border"
                 android:contentDescription="@string/empty" />
 

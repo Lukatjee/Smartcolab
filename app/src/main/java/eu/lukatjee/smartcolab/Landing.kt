@@ -12,20 +12,30 @@ import io.paperdb.Paper
 
 class Landing : AppCompatActivity(), View.OnClickListener {
 
+    private lateinit var fAuth : FirebaseAuth
+
+    private lateinit var signInButton : Button
+    private lateinit var signUpButton : Button
+
+    private lateinit var messageInvalidSaved : String
+
     override fun onCreate(savedInstanceState: Bundle?){
 
         super.onCreate(savedInstanceState)
 
-        Paper.init(this)
-
         setContentView(R.layout.activity_landing)
         intent.putExtra("FROM_ACTIVITY", "NONE")
 
-        val signInButton = findViewById<Button>(R.id.signInButton)
-        signInButton.setOnClickListener(this)
+        Paper.init(this)
+        fAuth = FirebaseAuth.getInstance()
 
-        val signUpButton = findViewById<Button>(R.id.signUpButton)
+        signInButton = findViewById(R.id.signInButton)
+        signUpButton = findViewById(R.id.signUpButton)
+
+        signInButton.setOnClickListener(this)
         signUpButton.setOnClickListener(this)
+
+        messageInvalidSaved = "Saved credentials did not match an existing account"
 
 
     }
@@ -41,7 +51,7 @@ class Landing : AppCompatActivity(), View.OnClickListener {
             val userDataKey = userData.keys.first()
             val userDataPassword = userData[userDataKey] ?: return
 
-            FirebaseAuth.getInstance().signInWithEmailAndPassword(userDataKey, userDataPassword).addOnCompleteListener(this) { task ->
+            fAuth.signInWithEmailAndPassword(userDataKey, userDataPassword).addOnCompleteListener(this) { task ->
 
                     if (task.isSuccessful) {
 
@@ -52,7 +62,7 @@ class Landing : AppCompatActivity(), View.OnClickListener {
 
                     } else {
 
-                        Toast.makeText(this, "Saved credentials did not match an existing account", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, messageInvalidSaved, Toast.LENGTH_LONG).show()
 
                     }
 
