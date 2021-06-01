@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -16,6 +17,7 @@ class Landing : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var signInButton : Button
     private lateinit var signUpButton : Button
+    private lateinit var progressBarOne : ProgressBar
 
     private lateinit var messageInvalidSaved : String
 
@@ -31,6 +33,7 @@ class Landing : AppCompatActivity(), View.OnClickListener {
 
         signInButton = findViewById(R.id.signInButton)
         signUpButton = findViewById(R.id.signUpButton)
+        progressBarOne = findViewById(R.id.progressBarOne)
 
         signInButton.setOnClickListener(this)
         signUpButton.setOnClickListener(this)
@@ -48,6 +51,10 @@ class Landing : AppCompatActivity(), View.OnClickListener {
 
         if (userData.isNotEmpty()) {
 
+            progressBarOne.visibility = View.VISIBLE
+            signInButton.isEnabled = false
+            signUpButton.isEnabled = false
+
             val userDataKey = userData.keys.first()
             val userDataPassword = userData[userDataKey] ?: return
 
@@ -57,6 +64,10 @@ class Landing : AppCompatActivity(), View.OnClickListener {
 
                         intent = Intent(this, Profile::class.java)
                         intent.putExtra("FROM_ACTIVITY", "NONE")
+
+                        progressBarOne.visibility = View.GONE
+                        signInButton.isEnabled = true
+                        signUpButton.isEnabled = true
 
                         startActivity(intent)
 

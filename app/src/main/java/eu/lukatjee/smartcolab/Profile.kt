@@ -45,13 +45,12 @@ class Profile : AppCompatActivity(), View.OnClickListener {
         currentUser = fAuth.currentUser!!
 
         storageRef = FirebaseStorage.getInstance().reference
-        fileRef = storageRef.child("profile_${currentUser.displayName}.png")
-
+        fileRef = storageRef.child("profile_${currentUser.uid}.png")
         displaynameEt = findViewById(R.id.displaynameEt)
         emailEt = findViewById(R.id.emailEtProfile)
         editProfileBtn = findViewById(R.id.editProfileBtn)
         profilePictureVw = findViewById(R.id.profilePictureVw)
-        logoutButton = findViewById<Button>(R.id.logoutBtn)
+        logoutButton = findViewById(R.id.logoutBtn)
 
         editProfileBtn.setOnClickListener(this)
         profilePictureVw.setOnClickListener(this)
@@ -119,6 +118,8 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
                 }
 
+                val profileChangeRqst = UserProfileChangeRequest.Builder().setDisplayName(displaynameIpt).build()
+
                 if (!(Patterns.EMAIL_ADDRESS.matcher(emailIpt).matches())) {
 
                     emailEt.error = "Invalid e-mail address"
@@ -127,8 +128,6 @@ class Profile : AppCompatActivity(), View.OnClickListener {
                     return
 
                 }
-
-                val profileChangeRqst = UserProfileChangeRequest.Builder().setDisplayName(displaynameIpt).build()
 
                 currentUser.updateProfile(profileChangeRqst).addOnCompleteListener(this){ task ->
 
@@ -181,23 +180,20 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
     }
 
+    private lateinit var imageUri : Uri
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == 1000) {
+        if ((requestCode != 1000) || (resultCode != Activity.RESULT_OK)) {
 
-            if (resultCode == Activity.RESULT_OK) {
-
-                val imageUri = data!!.data
-                uploadImageToFirebase(imageUri)
-
-                val profileChangeRqst = UserProfileChangeRequest.Builder().setPhotoUri(imageUri).build()
-                currentUser.updateProfile(profileChangeRqst)
-
-            }
+            return
 
         }
+
+        imageUri = data!!.data!!
+        uploadImageToFirebase(imageUri)
 
     }
 
@@ -212,6 +208,7 @@ class Profile : AppCompatActivity(), View.OnClickListener {
                     Picasso.get().load(uri).into(profilePictureVw)
 
                 }
+
                 Toast.makeText(this, "Successfully uploaded the image", Toast.LENGTH_LONG).show()
 
             } else {
@@ -255,7 +252,6 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
         fileRef.downloadUrl.addOnSuccessListener { uri : Uri? ->
 
-            profilePictureVw = findViewById(R.id.profilePictureVw)
             Picasso.get().load(uri).into(profilePictureVw)
 
         }

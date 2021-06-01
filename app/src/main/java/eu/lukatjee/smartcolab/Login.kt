@@ -7,6 +7,7 @@ import android.util.Patterns
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import io.paperdb.Paper
@@ -19,6 +20,7 @@ class Login : AppCompatActivity(), View.OnClickListener {
     private lateinit var signInBtn : Button
     private lateinit var emailEt : EditText
     private lateinit var passwordEt : EditText
+    private lateinit var progressBarTwo : ProgressBar
 
     private lateinit var messageFailedLogin : String
     private lateinit var messageIncorrectEmail : String
@@ -35,6 +37,7 @@ class Login : AppCompatActivity(), View.OnClickListener {
         signInBtn = findViewById(R.id.signInBtn)
         emailEt = findViewById(R.id.emailEt)
         passwordEt = findViewById(R.id.passwordEt)
+        progressBarTwo = findViewById(R.id.progressBarTwo)
 
         messageFailedLogin = "Failed to log in, please check the entered credentials"
         messageIncorrectEmail = "Invalid e-mail address"
@@ -44,7 +47,14 @@ class Login : AppCompatActivity(), View.OnClickListener {
 
     }
 
-    override fun onClick(v: View?) { when (v?.id) { R.id.signInBtn -> userLogin() } }
+    override fun onClick(v: View?) { when (v?.id) {
+
+        R.id.signInBtn -> {
+
+            progressBarTwo.visibility = View.VISIBLE
+            userLogin()
+
+        } } }
 
     private fun userLogin() {
 
@@ -56,6 +66,8 @@ class Login : AppCompatActivity(), View.OnClickListener {
             emailEt.error = messageIncorrectEmail
             emailEt.requestFocus()
 
+            progressBarTwo.visibility = View.GONE
+
             return
 
         }
@@ -64,6 +76,8 @@ class Login : AppCompatActivity(), View.OnClickListener {
 
             passwordEt.error = messageIncorrectPassword
             passwordEt.requestFocus()
+
+            progressBarTwo.visibility = View.GONE
 
             return
 
@@ -79,6 +93,8 @@ class Login : AppCompatActivity(), View.OnClickListener {
 
                 val userData = hashMapOf(emailIpt to passwordIpt)
                 Paper.book().write("userData", userData)
+
+                progressBarTwo.visibility = View.GONE
 
             } else {
 
