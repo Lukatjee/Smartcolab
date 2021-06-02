@@ -3,8 +3,8 @@
     package="eu.lukatjee.smartcolab">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -13,10 +13,10 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.Smartcolab">
+        <activity android:name=".Signup"></activity>
         <activity android:name=".Login" />
         <activity android:name=".Profile" />
-        <activity
-            android:name=".Landing">
+        <activity android:name=".Landing">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

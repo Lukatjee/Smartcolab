@@ -107,6 +107,14 @@ class Landing : AppCompatActivity(), View.OnClickListener {
 
             }
 
+            R.id.signUpButton -> {
+
+                intent = Intent(this, Signup::class.java)
+                intent.putExtra("FROM_ACTIVITY", "LANDING")
+                startActivity(intent)
+
+            }
+
         }
 
     }
