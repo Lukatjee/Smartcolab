@@ -9,6 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="crimson">#DC143C</color>
     <color name="darkgray">#232323</color>
+    <color name="darkestgray">#191919</color>
     <color name="lightgray">#adadad</color>
     <color name="customGreen2">#4f8200</color>
     <color name="customGreen">#589100</color>

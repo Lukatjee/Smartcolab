@@ -11,7 +11,7 @@ android {
     defaultConfig {
         multiDexEnabled true
         applicationId "eu.lukatjee.smartcolab"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -37,15 +37,13 @@ android {
 
 dependencies {
 
+    // Paper storage implementation
+
     implementation 'io.github.pilgr:paperdb:2.7.1'
+
+    // Firebase implementations
+
     implementation platform('com.google.firebase:firebase-bom:28.0.0')
-    implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'com.google.firebase:firebase-analytics-ktx'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.4.32"
-    implementation 'androidx.core:core-ktx:1.5.0'
-    implementation 'androidx.appcompat:appcompat:1.3.0'
-    implementation 'com.google.android.material:material:1.3.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'com.google.firebase:firebase-auth:21.0.1'
     implementation 'com.google.firebase:firebase-core:19.0.0'
     implementation 'com.google.firebase:firebase-storage-ktx:20.0.0'
@@ -55,13 +53,26 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore:23.0.0'
     implementation 'com.google.firebase:firebase-database:20.0.0'
     implementation 'com.google.firebase:firebase-storage:20.0.0'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+
+    // Image manipulation implementations
+
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+
+    // Foundation implementations
+
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.4.32"
+    implementation 'androidx.core:core-ktx:1.5.0'
+    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'com.google.android.material:material:1.3.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.1.1'
-    implementation 'com.squareup.picasso:picasso:2.71828'
-    implementation 'de.hdodenhof:circleimageview:3.1.0'
 
 }

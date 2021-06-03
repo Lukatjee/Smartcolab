@@ -35,6 +35,7 @@ class Profile : AppCompatActivity(), View.OnClickListener {
     private lateinit var editProfileBtn : Button
     private lateinit var profilePictureVw : CircleImageView
     private lateinit var logoutButton : Button
+    private lateinit var progressBar : ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -51,6 +52,7 @@ class Profile : AppCompatActivity(), View.OnClickListener {
         editProfileBtn = findViewById(R.id.editProfileBtn)
         profilePictureVw = findViewById(R.id.profilePictureVw)
         logoutButton = findViewById(R.id.logoutBtn)
+        progressBar = findViewById(R.id.progressBar)
 
         editProfileBtn.setOnClickListener(this)
         profilePictureVw.setOnClickListener(this)
@@ -129,21 +131,27 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
                 }
 
+                progressBar.visibility = View.VISIBLE
+
                 currentUser.updateProfile(profileChangeRqst).addOnCompleteListener(this){ task ->
 
                     if (task.isSuccessful) {
 
                         displaynameSv()
+                        progressBar.visibility = View.GONE
 
                     }
 
                 }
+
+                progressBar.visibility = View.VISIBLE
 
                 currentUser.updateEmail(emailIpt).addOnCompleteListener(this) { task ->
 
                     if (task.isSuccessful) {
 
                         emailSv()
+                        progressBar.visibility = View.GONE
 
                     }
 
@@ -172,7 +180,14 @@ class Profile : AppCompatActivity(), View.OnClickListener {
                     val openGalleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
                     startActivityForResult(openGalleryIntent, 1000)
 
-                }
+                } /* else {
+
+                    intent = Intent(this, Chats::class.java)
+                    intent.putExtra("FROM_ACTIVITY", "PROFILE")
+
+                    startActivity(intent)
+
+                } */
 
             }
 
@@ -199,12 +214,15 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
     private fun uploadImageToFirebase(imageUrl : Uri?) {
 
+        progressBar.visibility = View.VISIBLE
+
         fileRef.putFile(imageUrl!!).addOnCompleteListener { task ->
 
             if (task.isSuccessful) {
 
                 fileRef.downloadUrl.addOnSuccessListener { uri : Uri? ->
 
+                    progressBar.visibility = View.GONE
                     Picasso.get().load(uri).into(profilePictureVw)
 
                 }
@@ -213,6 +231,7 @@ class Profile : AppCompatActivity(), View.OnClickListener {
 
             } else {
 
+                progressBar.visibility = View.GONE
                 println("Oh no")
 
             }
@@ -250,9 +269,12 @@ class Profile : AppCompatActivity(), View.OnClickListener {
         displaynameEt.invalidate()
         emailEt.invalidate()
 
+        progressBar.visibility = View.VISIBLE
+
         fileRef.downloadUrl.addOnSuccessListener { uri : Uri? ->
 
             Picasso.get().load(uri).into(profilePictureVw)
+            progressBar.visibility = View.GONE
 
         }
 

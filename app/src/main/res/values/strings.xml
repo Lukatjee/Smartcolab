@@ -6,7 +6,7 @@
     <string name="empty" />
     <string name="backgroundDesc">Background</string>
     <string name="invalidCredentials"><b>Invalid credentials</b></string>
-    <string name="forgot_pin"><u>or reset PIN</u></string>
+    <string name="forgot_pin"><u>or reset password</u></string>
     <string name="register"><u>Register</u></string>
     <string name="display_name">%1$s</string>
     <string name="change"><u>Change</u></string>

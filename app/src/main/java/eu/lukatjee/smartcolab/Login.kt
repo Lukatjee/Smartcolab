@@ -5,10 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Patterns
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.Toast
+import android.widget.*
 import com.google.firebase.auth.FirebaseAuth
 import io.paperdb.Paper
 import java.util.*
@@ -21,6 +18,7 @@ class Login : AppCompatActivity(), View.OnClickListener {
     private lateinit var emailEt : EditText
     private lateinit var passwordEt : EditText
     private lateinit var progressBarTwo : ProgressBar
+    private lateinit var forgotPasswordBtn : TextView
 
     private lateinit var messageFailedLogin : String
     private lateinit var messageIncorrectEmail : String
@@ -38,12 +36,14 @@ class Login : AppCompatActivity(), View.OnClickListener {
         emailEt = findViewById(R.id.emailEt)
         passwordEt = findViewById(R.id.passwordEt)
         progressBarTwo = findViewById(R.id.progressBarTwo)
+        forgotPasswordBtn = findViewById(R.id.resetPasswordBtn)
 
         messageFailedLogin = "Failed to log in, please check the entered credentials"
         messageIncorrectEmail = "Invalid e-mail address"
         messageIncorrectPassword = "Password is required"
 
         signInBtn.setOnClickListener(this)
+        forgotPasswordBtn.setOnClickListener(this)
 
     }
 
